@@ -81,4 +81,7 @@ potrzebujemy dodatkowej zależnośći dla obsługi tokenów JWT np.
 </dependency>
 ```
 
+Dalej sprawdzamy czy nazwa użytkownika nie jest nullem oraz czy uwieżytelnianie już się nie odbyło. Wówczas
+
+
 
