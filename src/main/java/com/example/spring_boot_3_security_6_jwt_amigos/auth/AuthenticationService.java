@@ -36,8 +36,13 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        System.out.println("AUTH:" + authenticate.isAuthenticated());
+        Authentication authenticate = null;
+        try {
+            authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        } catch (Exception e) {
+            return AuthenticationResponse.builder().token(e.getLocalizedMessage()).build();
+        }
+
         AppUser appUser = appUserRepository.findByEmail(request.getEmail()).orElseThrow();
         String token = jwtService.generateToken(new UserDetailsAdapter(appUser));
         return AuthenticationResponse.builder().token(token).build();
