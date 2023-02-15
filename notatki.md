@@ -35,3 +35,50 @@ public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of(new SimpleGrantedAuthority(appUser.getRole().name()));
 }
 ```
+
+## JWT Authentication Filter
+
+Filar naszych zabezpieczeń, filtr sprawdzający użytkownika. Tworzymy klasę rozszerzającą ``OncePerRequestFilter``. Musimy tutaj 
+nadpisać metodę Zawierającą logikę.
+```
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+    }
+```
+**Pierwszą rzeczą którą musimy zrobić jest sprawdzenie tokena.**  
+Pobieramy go z obiektu ``request`` poprzez header *Authorization*, sprawdzamy czy wartość istnieje i zaczyna się od "Bearer ".
+Jeżeli nie, kończymy pracęfiltra poprzez wywołanie metody ``filterChain.doFilter``. Nie kończymy żądania, zostanie presłane dalej
+do kolejnych filtrów, ale bez uwierzytelnienia użytkownika. W przeciwnym przypadku z pomocą metody ``substring`` wyciągamy 
+właściwy token z nagłówka. 
+```
+final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+final String jwt;
+if (authHeader == null || !authHeader.startsWith("Bearer ")){
+    filterChain.doFilter(request, response);
+    return;
+}
+jwt = authHeader.substring(7);
+```
+  
+Następnie musimy uzyskać dane użytkonwnika z tokena. Można do tego posłużyć się klasą pomocniczą. Do jej działania 
+potrzebujemy dodatkowej zależnośći dla obsługi tokenów JWT np.
+```
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>-
+    <artifactId>jjwt-api</artifactId>
+    <version>0.11.5</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.11.5</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.11.5</version>
+</dependency>
+```
+
+
