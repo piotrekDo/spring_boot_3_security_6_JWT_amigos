@@ -82,6 +82,9 @@ potrzebujemy dodatkowej zależnośći dla obsługi tokenów JWT np.
 ```
 
 Dalej sprawdzamy czy nazwa użytkownika nie jest nullem oraz czy uwieżytelnianie już się nie odbyło. Wówczas
-
+sięgamy do serwisu i odpytujemy o użytkownika z nazwą podaną w tokenie. Mając *userDetails* możemy sprawdzić czy otrzymany
+token jest poprawny i jeżeli tak to aktualizujemy kontekst Springa z pomocą obiektu ``UsernamePasswordAuthenticationToken``
+opcjonalnie przekazujemy do niego ``details`` uzyskane z pomocą obiektu ``WebAuthenticationDetailsSource`` do którego 
+przekazujemy obiekt ``request``. Ostatecznie kończymy pracę filtra wywołaniem metody ``filterChain.doFilter(request, response);``. 
 
 
